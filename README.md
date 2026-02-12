@@ -12,6 +12,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - Generate daily reports showing top 100 domains queried
 - Organize reports by client IP in separate directories
 - Create combined summary reports
+- AI-powered content analysis using Google Gemini
 - Automatic email delivery of daily summaries
 - Configurable via command-line arguments
 
@@ -21,12 +22,20 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - `mailutils` and `ssmtp` (or similar mail transfer agent)
 - User must be in the `pihole` group to access the database
 - SQLite3
+- Python (for AI analysis feature)
+- Google Gemini API key (for content analysis)
 
 ### Install Dependencies
 
 ```bash
 sudo apt-get update
-sudo apt-get install mailutils ssmtp sqlite3
+sudo apt-get install mailutils ssmtp sqlite3 python3 python3-pip
+```
+
+### Install Python Dependencies (for AI analysis)
+
+```bash
+pip3 install -r requirements.txt
 ```
 
 ### Configure Email (SSMTP with Gmail)
@@ -58,6 +67,30 @@ sudo usermod -a -G pihole $USER
 ```
 
 Log out and back in for the group change to take effect.
+
+### Configure Gemini API (Optional)
+
+For AI-powered content analysis:
+
+1. Get a Gemini API key: https://makersuite.google.com/app/apikey
+
+2. Set the environment variable:
+```bash
+export GEMINI_API_KEY="your-api-key-here"
+```
+
+3. For persistent configuration, add to your crontab:
+```bash
+crontab -e
+```
+
+Add before your cron job line:
+```
+GEMINI_API_KEY=your-api-key-here
+0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100" --dir "/home/pi/reports"
+```
+
+The AI analysis will automatically run if `GEMINI_API_KEY` is set, analyzing DNS queries for age-inappropriate content (social media, chat apps, adult content, etc.).
 
 ## Usage
 

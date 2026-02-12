@@ -67,6 +67,17 @@ EOF
     echo -e "\n\n" >> "$COMBINED_REPORT"
 done
 
+# Analyze report with Gemini (if GEMINI_API_KEY is set)
+if [[ -n "${GEMINI_API_KEY}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
+
+    if python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" > "$ANALYSIS_FILE" 2>&1; then
+        echo -e "\n\n=== AI ANALYSIS ===" >> "$COMBINED_REPORT"
+        cat "$ANALYSIS_FILE" >> "$COMBINED_REPORT"
+    fi
+fi
+
 # Send email
 cat "$COMBINED_REPORT" | mail -s "Pi-hole Daily Report - ${DATE}" "$EMAIL"
 

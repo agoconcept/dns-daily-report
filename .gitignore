@@ -1,2 +1,6 @@
 192.168.*/
 summary_*.txt
+analysis_*.txt
+__pycache__/
+*.pyc
+.env
