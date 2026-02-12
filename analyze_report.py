@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 import sys
 import os
-from google import generativeai as genai
+import requests
 
 def analyze_dns_report(report_file, api_key):
-    """Analyze DNS report for inappropriate content for an 11-year-old."""
-    
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-pro')
-    
+    """Analyze DNS report for inappropriate content for kids."""
+
     with open(report_file, 'r') as f:
         report_content = f.read()
-    
-    prompt = f"""Analyze this DNS query report for an 11-year-old child. Identify any concerns regarding:
+
+    prompt = f"""Analyze this DNS query report for kids. Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
 - Adult or inappropriate content
@@ -27,15 +24,26 @@ Provide a brief summary with:
 DNS Report:
 {report_content}
 """
-    
-    response = model.generate_content(prompt)
-    return response.text
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash:generateContent?key={api_key}"
+
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }]
+    }
+
+    response = requests.post(url, json=payload)
+    response.raise_for_status()
+
+    result = response.json()
+    return result['candidates'][0]['content']['parts'][0]['text']
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: analyze_report.py <report_file>")
-        sys.exit(1)
-    
+sys.exit(1)
+
     report_file = sys.argv[1]
     api_key = os.getenv('GEMINI_API_KEY')
     
