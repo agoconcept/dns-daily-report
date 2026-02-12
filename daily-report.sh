@@ -72,12 +72,10 @@ if [[ -n "${GEMINI_API_KEY}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
 
-    if python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" > "$ANALYSIS_FILE" 2>&1; then
-        echo -e "\n\n=== AI ANALYSIS ===" >> "$COMBINED_REPORT"
-        cat "$ANALYSIS_FILE" >> "$COMBINED_REPORT"
-    fi
+    echo -e "=== AI ANALYSIS ===\n\n" > "$ANALYSIS_FILE"
+    python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" >> "$ANALYSIS_FILE" 2>&1
 fi
 
 # Send email
-cat "$COMBINED_REPORT" | mail -s "Pi-hole Daily Report - ${DATE}" "$EMAIL"
+cat "$ANALYSIS_FILE" | mail -a "Content-Type: text/html; charset=UTF-8" -s "Pi-hole Daily Report - ${DATE}" "$EMAIL"
 

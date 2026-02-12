@@ -16,16 +16,18 @@ def analyze_dns_report(report_file, api_key):
 - Gaming platforms with chat features
 - Any other age-inappropriate websites
 
-Provide a brief summary with:
+Provide a brief summary in HTML format with:
 1. Overall assessment (Safe/Caution/Concern)
 2. Specific domains of concern (if any)
 3. Recommendations
+
+Add also at the end one HTML formatted table per IP with one column for the domain and another for the number of hits
 
 DNS Report:
 {report_content}
 """
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
 
     payload = {
         "contents": [{
@@ -42,18 +44,19 @@ DNS Report:
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: analyze_report.py <report_file>")
-sys.exit(1)
+        sys.exit(1)
 
     report_file = sys.argv[1]
     api_key = os.getenv('GEMINI_API_KEY')
-    
+
     if not api_key:
         print("Error: GEMINI_API_KEY environment variable not set")
         sys.exit(1)
-    
+
     if not os.path.exists(report_file):
         print(f"Error: Report file not found: {report_file}")
         sys.exit(1)
-    
+
     analysis = analyze_dns_report(report_file, api_key)
     print(analysis)
+
