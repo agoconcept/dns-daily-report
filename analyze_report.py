@@ -23,6 +23,8 @@ Provide a brief summary in HTML format with:
 
 Add also at the end one HTML formatted table per IP with one column for the domain and another for the number of hits
 
+I want the report to be in Spanish
+
 DNS Report:
 {report_content}
 """
