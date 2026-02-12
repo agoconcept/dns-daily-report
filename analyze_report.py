@@ -9,7 +9,8 @@ def analyze_dns_report(report_file, api_key):
     with open(report_file, 'r') as f:
         report_content = f.read()
 
-    prompt = f"""Analyze this DNS query report for kids. Identify any concerns regarding:
+    prompt = f"""Analyze this DNS query report to detect potential inappropriate content for kids.
+Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
 - Adult or inappropriate content
