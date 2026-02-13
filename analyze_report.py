@@ -2,6 +2,18 @@
 import sys
 import os
 import requests
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.HTTPError))
+)
+def call_gemini_api(url, payload):
+    """Call Gemini API with retry logic."""
+    response = requests.post(url, json=payload)
+    response.raise_for_status()
+    return response.json()
 
 def analyze_dns_report(report_file, api_key):
     """Analyze DNS report for inappropriate content for kids."""
@@ -38,10 +50,7 @@ DNS Report:
         }]
     }
 
-    response = requests.post(url, json=payload)
-    response.raise_for_status()
-
-    result = response.json()
+    result = call_gemini_api(url, payload)
     return result['candidates'][0]['content']['parts'][0]['text']
 
 if __name__ == "__main__":

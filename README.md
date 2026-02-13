@@ -92,6 +92,13 @@ GEMINI_API_KEY=your-api-key-here
 
 The AI analysis will automatically run if `GEMINI_API_KEY` is set, analyzing DNS queries for age-inappropriate content (social media, chat apps, adult content, etc.).
 
+#### Retry Logic
+
+The Gemini API client includes automatic retry logic with exponential backoff:
+- 3 retry attempts on network or API errors
+- Exponential backoff between retries (2-10 seconds)
+- Handles transient failures and rate limits automatically
+
 ## Usage
 
 ```bash
