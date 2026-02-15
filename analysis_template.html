@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DNS Safety Analysis Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+        }
+        .box {
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #ccc;
+        }
+        .box h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .status-caution {
+            color: #d35400;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: white;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #e2e2e2;
+        }
+        .warning-text {
+            color: #c0392b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>DNS Safety Analysis Report</h1>
+        <p>This report analyzes the web activity for clients <strong>192.168.1.135</strong> and <strong>192.168.1.141</strong> to identify potential exposure to age-inappropriate content.</p>
+
+        <!-- 1. Overall Assessment -->
+        <div class="box">
+            <h2>1. Overall Assessment</h2>
+            <p>Status: <span class="status-caution">CAUTION</span></p>
+            <p>
+                The network activity shows a mix of educational tools (Duolingo), music (Spotify), and system updates. However, there are signs of <strong>Social Media</strong> access (Facebook) and <strong>Video Editing/Social Sharing</strong> tools (CapCut) on one device, as well as <strong>Casual Gaming</strong> platforms (Poki) on the other. No direct access to adult-only websites was detected, but the presence of Facebook and YouTube warrants monitoring.
+            </p>
+        </div>
+
+        <!-- 2. Specific Domains of Concern -->
+        <div class="box">
+            <h2>2. Specific Domains of Concern</h2>
+            <ul>
+                <li><span class="warning-text">Facebook (web.facebook.com):</span> Detected on 192.168.1.135. Facebook is generally rated 13+ and contains uncurated social content and messaging.</li>
+                <li><span class="warning-text">CapCut (capcutapi.us):</span> Detected on 192.168.1.135. While a video editor, it is owned by ByteDance (TikTok) and features a social community where users share videos.</li>
+                <li><span class="warning-text">Poki (poki.com):</span> Detected on 192.168.1.141. An online gaming site. While many games are for kids, it contains ads and unrated third-party games.</li>
+                <li><span class="warning-text">YouTube (googlevideo.com / youtube.com):</span> High volume on both devices. Without Restricted Mode, children may encounter inappropriate video content.</li>
+            </ul>
+        </div>
+
+        <!-- 3. Recommendations -->
+        <div class="box">
+            <h2>3. Recommendations</h2>
+            <ol>
+                <li><strong>Review Social Media Usage:</strong> Confirm if the user of 192.168.1.135 is of age to use Facebook and CapCut.</li>
+                <li><strong>Enforce YouTube Restricted Mode:</strong> Ensure that the Google accounts associated with these devices have "Restricted Mode" enabled to filter out mature content.</li>
+                <li><strong>Ad-Blocking:</strong> A high number of hits are from <code>applovin.com</code> and <code>doubleclick.net</code>. These are ad-trackers often found in free mobile games. Consider a network-level ad blocker to reduce exposure to inappropriate advertisements.</li>
+                <li><strong>Check "Poki" Activity:</strong> For the device 192.168.1.141, monitor time spent on Poki.com as it can be a significant distraction.</li>
+            </ol>
+        </div>
+
+        <!-- 4. Raw Data -->
+        <div class="box">
+            <h2>4. Raw Data</h2>
+
+            <h3>Client: 192.168.1.135</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Hits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>ms.applovin.com</td><td>570</td></tr>
+                    <tr><td>prod-mediate-events.applovin.com</td><td>502</td></tr>
+                    <tr><td>googleads.g.doubleclick.net</td><td>259</td></tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</body>
+</html>

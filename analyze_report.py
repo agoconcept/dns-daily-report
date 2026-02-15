@@ -4,6 +4,8 @@ import os
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
+ANALYSIS_TEMPLATE_FILE = "analysis_template.html"
+
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
@@ -21,7 +23,10 @@ def analyze_dns_report(report_file, api_key):
     with open(report_file, 'r') as f:
         report_content = f.read()
 
-    prompt = f"""Analyze this DNS query report to detect potential inappropriate content for kids.
+    with open(ANALYSIS_TEMPLATE_FILE, 'r') as f:
+        analysis_template = f.read()
+
+    prompt = f"""Analyze the DNS report to detect potential inappropriate content for kids.
 Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
@@ -29,17 +34,26 @@ Identify any concerns regarding:
 - Gaming platforms with chat features
 - Any other age-inappropriate websites
 
-Provide a brief summary in HTML format with:
+Provide a summary in a nice HTML format with the following sections:
 1. Overall assessment (Safe/Caution/Concern)
 2. Specific domains of concern (if any)
 3. Recommendations
+4. Raw data
 
-Add also at the end one HTML formatted table per IP with one column for the domain and another for the number of hits
+The Raw data section must include one HTML formatted table for each IP client,
+with one column for the domain and another for the number of hits. Include the
+complete list of DNS entries in the table.
 
-I want the report to be in Spanish
+The whole report must be formatted in HTML format, ready to be sent by email,
+with a layout of one box for each section. The boxes must have a light gray
+colored background.
 
 DNS Report:
 {report_content}
+-----
+
+This is the analysis template to use as a reference:
+{analysis_template}
 """
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
