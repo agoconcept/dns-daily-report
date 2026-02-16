@@ -4,8 +4,6 @@ import os
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-ANALYSIS_TEMPLATE_FILE = "analysis_template.html"
-
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
@@ -17,13 +15,13 @@ def call_gemini_api(url, payload):
     response.raise_for_status()
     return response.json()
 
-def analyze_dns_report(report_file, api_key):
+def analyze_dns_report(report_file, analysis_template_file, api_key):
     """Analyze DNS report for inappropriate content for kids."""
 
     with open(report_file, 'r') as f:
         report_content = f.read()
 
-    with open(ANALYSIS_TEMPLATE_FILE, 'r') as f:
+    with open(analysis_template_file, 'r') as f:
         analysis_template = f.read()
 
     prompt = f"""Analyze the DNS report to detect potential inappropriate content for kids.
@@ -68,11 +66,12 @@ This is the analysis template to use as a reference:
     return result['candidates'][0]['content']['parts'][0]['text']
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: analyze_report.py <report_file>")
+    if len(sys.argv) != 3:
+        print("Usage: analyze_report.py <report_file> <analysis_template_file>")
         sys.exit(1)
 
     report_file = sys.argv[1]
+    analysis_template_file = sys.argv[2]
     api_key = os.getenv('GEMINI_API_KEY')
 
     if not api_key:
@@ -83,6 +82,6 @@ if __name__ == "__main__":
         print(f"Error: Report file not found: {report_file}")
         sys.exit(1)
 
-    analysis = analyze_dns_report(report_file, api_key)
+    analysis = analyze_dns_report(report_file, analysis_template_file, api_key)
     print(analysis)
 
