@@ -4,6 +4,17 @@ import os
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
+LLM = "gemini-flash-latest"
+
+DNS_WHITE_LIST = [
+    "graph.facebook.com",                   # Used just for login screens
+    "capcutapi.us",                         # CapCut video editing
+    "youtube.com", "googlevideo.com",       # YouTube videos
+    "spotify.com",                          # Spotify
+    "pinterest.com", "pinimg.com",          # Pinterest
+    "amazon.es"                             # Amazon
+]
+
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
@@ -24,8 +35,8 @@ def analyze_dns_report(report_file, analysis_template_file, api_key):
     with open(analysis_template_file, 'r') as f:
         analysis_template = f.read()
 
-    prompt = f"""Analyze the DNS report to detect potential inappropriate content for kids.
-Identify any concerns regarding:
+    prompt = f"""Analyze the DNS report to detect potential inappropriate
+content for an 11 year-old girl.  Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
 - Adult or inappropriate content
@@ -44,7 +55,16 @@ complete list of DNS entries in the table.
 
 The whole report must be formatted in HTML format, ready to be sent by email,
 with a layout of one box for each section. The boxes must have a light gray
-colored background.
+colored background. I send an example of how it should be formatted below.
+
+I have already setup a Pi-hole to reduce ads, so ad content should be minimum,
+but tell me also if there is some improvement I can do to minimize it even
+further.
+
+Ignore in the analysis this list of DNS queries. I have checked that they are
+ok:
+{DNS_WHITE_LIST}
+-----
 
 DNS Report:
 {report_content}
@@ -54,7 +74,7 @@ This is the analysis template to use as a reference:
 {analysis_template}
 """
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{LLM}:generateContent?key={api_key}"
 
     payload = {
         "contents": [{
