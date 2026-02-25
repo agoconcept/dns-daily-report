@@ -54,12 +54,16 @@ for CLIENT_IP in $CLIENT_IPS; do
     sqlite3 /etc/pihole/pihole-FTL.db <<EOF > "$REPORT_FILE"
 .headers on
 .mode column
-SELECT domain, COUNT(*) as queries
-FROM queries
-WHERE client='${CLIENT_IP}'
-AND timestamp > ${TIMESTAMP}
-GROUP BY domain
-ORDER BY queries DESC
+SELECT
+    q.domain,
+    COUNT(*) as total_queries,
+    SUM(CASE WHEN q.status IN (1, 4, 5, 6, 7, 8, 9, 10, 11) THEN 1 ELSE 0 END) as blocked,
+    SUM(CASE WHEN q.status IN (2, 3) THEN 1 ELSE 0 END) as allowed
+FROM queries q
+LEFT JOIN client_by_id c ON q.client = c.ip
+WHERE q.client="${CLIENT_IP}" AND q.timestamp > ${TIMESTAMP}
+GROUP BY q.domain
+ORDER BY total_queries DESC
 LIMIT 100;
 EOF
 
