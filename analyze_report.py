@@ -39,6 +39,7 @@ def analyze_dns_report(report_file, analysis_template_file, api_key):
 content for an 11 year-old girl.  Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
+- Potentially unhealthy diet habits
 - Adult or inappropriate content
 - Gaming platforms with chat features
 - Any other age-inappropriate websites
