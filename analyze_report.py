@@ -52,4 +52,4 @@ if __name__ == "__main__":
         report_content = f.read()
 
     analysis = analyze_dns_report(report_file, analysis_template_file)
-    print(analysis + "<hr/>" + report_content)
+    print(analysis + "<hr/><pre>" + report_content + "</pre>")
