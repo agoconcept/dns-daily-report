@@ -64,7 +64,7 @@ LEFT JOIN client_by_id c ON q.client = c.ip
 WHERE q.client="${CLIENT_IP}" AND q.timestamp > ${TIMESTAMP}
 GROUP BY q.domain
 ORDER BY total_queries DESC
-LIMIT 100;
+LIMIT 300;
 EOF
 
     cat "$REPORT_FILE" >> "$COMBINED_REPORT"
