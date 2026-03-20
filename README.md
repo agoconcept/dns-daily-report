@@ -12,7 +12,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - Generate daily reports showing top 100 domains queried
 - Organize reports by client IP in separate directories
 - Create combined summary reports
-- AI-powered content analysis using Google Gemini
+- AI-powered content analysis using Gemini or DeepSeek
 - Automatic email delivery of daily summaries
 - Configurable via command-line arguments
 
@@ -23,7 +23,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - User must be in the `pihole` group to access the database
 - SQLite3
 - Python (for AI analysis feature)
-- Google Gemini API key (for content analysis)
+- Gemini or DeepSeek API key (for content analysis)
 
 ### Install Dependencies
 
@@ -68,36 +68,52 @@ sudo usermod -a -G pihole $USER
 
 Log out and back in for the group change to take effect.
 
-### Configure Gemini API (Optional)
+### Configure AI Analysis (Optional)
 
-For AI-powered content analysis:
+The analysis runs automatically if either `GEMINI_API_KEY` or `DEEPSEEK_API_KEY` is set. Gemini takes precedence if both are set.
 
-1. Get a Gemini API key: https://makersuite.google.com/app/apikey
+#### Gemini
 
+1. Get an API key: https://makersuite.google.com/app/apikey
 2. Set the environment variable:
 ```bash
 export GEMINI_API_KEY="your-api-key-here"
 ```
 
-3. For persistent configuration, add to your crontab:
+#### DeepSeek
+
+1. Get an API key: https://platform.deepseek.com/
+2. Set the environment variable:
 ```bash
-crontab -e
+export DEEPSEEK_API_KEY="your-api-key-here"
 ```
 
-Add before your cron job line:
+#### Model Configuration
+
+Models are configured in `config.ini`:
+
+```ini
+[llm]
+gemini_model = gemini-2.0-flash
+deepseek_model = deepseek-chat
+```
+
+#### Prompt Customization
+
+The analysis prompt is stored in `res/prompt.txt` and can be edited to adjust the analysis criteria.
+
+#### Retry Logic
+
+The LLM clients include automatic retry logic with exponential backoff:
+- 3 retry attempts on network or API errors
+- Exponential backoff between retries (2-10 seconds)
+
+#### Cron Setup with API Key
+
 ```
 GEMINI_API_KEY=your-api-key-here
 0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100" --dir "/home/pi/reports"
 ```
-
-The AI analysis will automatically run if `GEMINI_API_KEY` is set, analyzing DNS queries for age-inappropriate content (social media, chat apps, adult content, etc.).
-
-#### Retry Logic
-
-The Gemini API client includes automatic retry logic with exponential backoff:
-- 3 retry attempts on network or API errors
-- Exponential backoff between retries (2-10 seconds)
-- Handles transient failures and rate limits automatically
 
 ## Usage
 
@@ -140,60 +156,52 @@ crontab -e
 0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100 192.168.1.101" --dir "/home/pi/reports"
 ```
 
-## Report Structure
+## Project Structure
 
-Reports are organized as follows:
+```
+.
+├── daily-report.sh             # Main script
+├── analyze_report.py           # AI analysis entry point
+├── config.ini                  # LLM model configuration
+├── requirements.txt
+├── llm/
+│   ├── gemini.py               # Gemini API client
+│   └── deepseek.py             # DeepSeek API client
+└── res/
+    ├── prompt.txt              # Analysis prompt template
+    └── analysis_template.html  # HTML report template
+```
+
+## Report Structure
 
 ```
 <report_dir>/
-├── summary_YYYY-MM-DD.txt          # Combined report (emailed)
+├── summary_YYYY-MM-DD.txt          # Combined report
+├── analysis_YYYY-MM-DD.txt         # AI analysis (emailed)
 ├── 192.168.1.100/
-│   └── YYYY-MM-DD.txt              # Individual client report
-├── 192.168.1.101/
 │   └── YYYY-MM-DD.txt
 └── ...
 ```
-
-Each report contains:
-- Domain names queried
-- Number of queries per domain
-- Top 100 domains sorted by query count
 
 ## Troubleshooting
 
 ### Permission Denied on Database
 
-Ensure your user is in the `pihole` group:
-```bash
-groups
-```
-
-If `pihole` is not listed, add yourself and log out/in:
 ```bash
 sudo usermod -a -G pihole $USER
 ```
 
 ### Email Not Sending
 
-Test your mail configuration:
 ```bash
 echo "Test" | mail -s "Test" your@email.com
-```
-
-Check SSMTP logs:
-```bash
 sudo tail -f /var/log/mail.log
 ```
 
 ### No Data in Reports
 
-Verify Pi-hole database location:
 ```bash
 ls -l /etc/pihole/pihole-FTL.db
-```
-
-Check if client IPs are correct:
-```bash
 sqlite3 /etc/pihole/pihole-FTL.db "SELECT DISTINCT client FROM queries LIMIT 10;"
 ```
 
