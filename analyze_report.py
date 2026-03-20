@@ -4,7 +4,8 @@ import os
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-LLM = "gemini-flash-latest"
+#LLM = "gemini-flash-latest"
+LLM = "gemini-3.1-pro-preview"
 
 DNS_WHITE_LIST = [
     "graph.facebook.com",                   # Used just for login screens
@@ -48,22 +49,19 @@ Provide a summary in a nice HTML format with the following sections:
 1. Overall assessment (Safe/Caution/Concern)
 2. Specific domains of concern (if any)
 3. Recommendations
-4. Raw data
-
-The Raw data section must include one HTML formatted table for each IP client,
-with one column for the domain and another for the number of hits. Include the
-complete list of DNS entries in the table.
 
 The whole report must be formatted in HTML format, ready to be sent by email,
 with a layout of one box for each section. The boxes must have a light gray
 colored background. I send an example of how it should be formatted below.
 
-I have already setup a Pi-hole to reduce ads, so ad content should be minimum,
-but tell me also if there is some improvement I can do to minimize it even
-further.
+I have already setup a Pi-hole to reduce ads, so ad content should be minimum.
+Pi-hole already contains "OISD" (Full) blocklist, and I have sent
+YouTube domains to 216.239.38.119 (for Moderate restricted mode).
 
-Ignore in the analysis this list of DNS queries. I have checked that they are
-ok:
+If some traffic is already blocked, so my daughter cannot access to that
+specific domain, do not consider that domain as a potential issue.
+
+Ignore in the analysis this list of domains. I have checked that they are ok:
 {DNS_WHITE_LIST}
 -----
 
@@ -104,5 +102,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     analysis = analyze_dns_report(report_file, analysis_template_file, api_key)
-    print(analysis)
+    print(analysis + "<br/>***<br/>" + report_content)
 
