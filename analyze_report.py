@@ -21,11 +21,10 @@ def analyze_dns_report(report_file, analysis_template_file):
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(script_dir, 'res', 'prompt.txt'), 'r') as f:
-        prompt = f.read().format(
-            dns_white_list=DNS_WHITE_LIST,
-            report_content=report_content,
-            analysis_template=analysis_template
-        )
+        prompt = f.read() \
+            .replace('{dns_white_list}', str(DNS_WHITE_LIST)) \
+            .replace('{report_content}', report_content) \
+            .replace('{analysis_template}', analysis_template)
 
     gemini_key = os.getenv('GEMINI_API_KEY')
     deepseek_key = os.getenv('DEEPSEEK_API_KEY')
