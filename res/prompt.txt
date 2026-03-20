@@ -9,12 +9,15 @@ content for an 11 year-old girl.  Identify any concerns regarding:
 
 Provide a summary in a nice HTML format with the following sections:
 1. Overall assessment (Safe/Caution/Concern)
-2. Specific domains of concern (if any)
-3. Recommendations
+2. Summary of websites visited (group domains by category, e.g. Social Media, Gaming, Streaming, Education, etc. — exclude infrastructure/CDN/telemetry domains such as akamai.net, cloudfront.net, gstatic.com, and similar)
+3. Specific domains of concern (if any)
+4. Recommendations
 
 The whole report must be formatted in HTML format, ready to be sent by email,
 with a layout of one box for each section. The boxes must have a light gray
-colored background. I send an example of how it should be formatted below.
+colored background. Do not include markdown code fences or any text outside
+the HTML. The report must be written in English. Use the example below as a
+reference for formatting.
 
 I have already setup a Pi-hole to reduce ads, so ad content should be minimum.
 Pi-hole already contains "OISD" (Full) blocklist, and I have sent
