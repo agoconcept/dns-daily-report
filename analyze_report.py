@@ -101,6 +101,9 @@ if __name__ == "__main__":
         print(f"Error: Report file not found: {report_file}")
         sys.exit(1)
 
+    with open(report_file, 'r') as f:
+        report_content = f.read()
+
     analysis = analyze_dns_report(report_file, analysis_template_file, api_key)
-    print(analysis + "<br/>***<br/>" + report_content)
+    print(analysis + "<hr/>" + report_content)
 
