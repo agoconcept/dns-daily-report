@@ -3,6 +3,7 @@ import sys
 import os
 import llm.gemini as gemini
 import llm.deepseek as deepseek
+import llm.minimax as minimax
 
 DNS_WHITE_LIST = [
     "graph.facebook.com",                   # Used just for login screens
@@ -28,13 +29,16 @@ def analyze_dns_report(report_file, analysis_template_file):
 
     gemini_key = os.getenv('GEMINI_API_KEY')
     deepseek_key = os.getenv('DEEPSEEK_API_KEY')
+    minimax_key = os.getenv('MINIMAX_API_KEY')
 
     if gemini_key:
         return gemini.call(prompt, gemini_key)
     elif deepseek_key:
         return deepseek.call(prompt, deepseek_key)
+    elif minimax_key:
+        return minimax.call(prompt, minimax_key)
     else:
-        print("Error: neither GEMINI_API_KEY nor DEEPSEEK_API_KEY is set")
+        print("Error: neither GEMINI_API_KEY, DEEPSEEK_API_KEY nor MINIMAX_API_KEY is set")
         sys.exit(1)
 
 if __name__ == "__main__":
