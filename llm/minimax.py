@@ -10,7 +10,7 @@ MODEL = _config['llm']['minimax_model']
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
-    retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.HTTPError))
+    retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.HTTPError, RuntimeError))
 )
 def call(prompt, api_key):
     url = "https://api.minimaxi.chat/v1/text/chatcompletion_v2"
@@ -21,4 +21,7 @@ def call(prompt, api_key):
     }, headers=headers)
     response.raise_for_status()
     result = response.json()
+    if not result.get('choices'):
+        err = result.get('base_resp', {})
+        raise RuntimeError(f"MiniMax API error: {err.get('status_code')} {err.get('status_msg')}")
     return result['choices'][0]['message']['content']
