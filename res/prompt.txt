@@ -1,5 +1,5 @@
 Analyze the DNS report to detect potential inappropriate
-content for an 11 year-old girl.  Identify any concerns regarding:
+content for an 11 year-old girl. Do not include any chain-of-thought, reasoning process, or internal thinking — output only the final HTML report.  Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
 - Potentially unhealthy diet habits
