@@ -12,7 +12,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - Generate daily reports showing top 100 domains queried
 - Organize reports by client IP in separate directories
 - Create combined summary reports
-- AI-powered content analysis using Gemini or DeepSeek
+- AI-powered content analysis using MiniMax, DeepSeek or Gemini
 - Automatic email delivery of daily summaries
 - Configurable via command-line arguments
 
@@ -23,7 +23,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - User must be in the `pihole` group to access the database
 - SQLite3
 - Python (for AI analysis feature)
-- Gemini or DeepSeek API key (for content analysis)
+- MiniMax, DeepSeek or Gemini API key (for content analysis)
 
 ### Install Dependencies
 
@@ -70,14 +70,14 @@ Log out and back in for the group change to take effect.
 
 ### Configure AI Analysis (Optional)
 
-The analysis runs automatically if either `GEMINI_API_KEY` or `DEEPSEEK_API_KEY` is set. Gemini takes precedence if both are set.
+The analysis runs automatically if `MINIMAX_API_KEY`, `DEEPSEEK_API_KEY`, or `GEMINI_API_KEY` is set. MiniMax takes precedence, then DeepSeek, then Gemini.
 
-#### Gemini
+#### MiniMax
 
-1. Get an API key: https://makersuite.google.com/app/apikey
+1. Get an API key: https://platform.minimaxi.com/
 2. Set the environment variable:
 ```bash
-export GEMINI_API_KEY="your-api-key-here"
+export MINIMAX_API_KEY="your-api-key-here"
 ```
 
 #### DeepSeek
@@ -86,6 +86,14 @@ export GEMINI_API_KEY="your-api-key-here"
 2. Set the environment variable:
 ```bash
 export DEEPSEEK_API_KEY="your-api-key-here"
+```
+
+#### Gemini
+
+1. Get an API key: https://makersuite.google.com/app/apikey
+2. Set the environment variable:
+```bash
+export GEMINI_API_KEY="your-api-key-here"
 ```
 
 #### Model Configuration
@@ -111,6 +119,8 @@ The LLM clients include automatic retry logic with exponential backoff:
 #### Cron Setup with API Key
 
 ```
+MINIMAX_API_KEY=your-api-key-here
+DEEPSEEK_API_KEY=your-api-key-here
 GEMINI_API_KEY=your-api-key-here
 0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100" --dir "/home/pi/reports"
 ```

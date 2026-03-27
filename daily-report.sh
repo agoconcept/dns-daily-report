@@ -71,12 +71,13 @@ EOF
     echo -e "\n\n" >> "$COMBINED_REPORT"
 done
 
-# Analyze report with LLM (if GEMINI_API_KEY or DEEPSEEK_API_KEY is set)
-if [[ -n "${GEMINI_API_KEY}" || -n "${DEEPSEEK_API_KEY}" ]]; then
+# Analyze report with LLM (if an API key is set), otherwise fall back to raw summary
+if [[ -n "${MINIMAX_API_KEY}" || -n "${DEEPSEEK_API_KEY}" || -n "${GEMINI_API_KEY}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
-
     python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" "$SCRIPT_DIR/res/analysis_template.html" > "$ANALYSIS_FILE" 2>&1
+else
+    ANALYSIS_FILE="$COMBINED_REPORT"
 fi
 
 # Send email
