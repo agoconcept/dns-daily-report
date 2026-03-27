@@ -77,7 +77,8 @@ if [[ -n "${MINIMAX_API_KEY}" || -n "${DEEPSEEK_API_KEY}" || -n "${GEMINI_API_KE
     ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
     python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" "$SCRIPT_DIR/res/analysis_template.html" > "$ANALYSIS_FILE" 2>&1
 else
-    ANALYSIS_FILE="$COMBINED_REPORT"
+    echo "No API key defined" | mail -s "Pi-hole Daily Report - ${DATE}" "$EMAIL"
+    exit 0
 fi
 
 # Send email
