@@ -25,7 +25,7 @@ def call(prompt, api_key):
         response = requests.post(url, json={
             "model": MODEL,
             "messages": [{"role": "user", "content": prompt}]
-        }, headers=headers)
+        }, headers=headers, timeout=180)
         if response.status_code == 429 and attempt < 1:
             retry_after = int(response.headers.get('Retry-After', 30))
             log(f"Rate limited, retrying in {retry_after}s...")
