@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import configparser
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
@@ -9,16 +11,23 @@ MODEL = _config['llm']['zhipu_model']
 
 @retry(
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=2, min=4, max=60),
-    retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.HTTPError))
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    retry=retry_if_exception_type(requests.exceptions.RequestException)
 )
 def call(prompt, api_key):
     url = "https://api.z.ai/api/paas/v4/chat/completions"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    response = requests.post(url, json={
-        "model": MODEL,
-        "messages": [{"role": "user", "content": prompt}]
-    }, headers=headers)
+    for attempt in range(5):
+        response = requests.post(url, json={
+            "model": MODEL,
+            "messages": [{"role": "user", "content": prompt}]
+        }, headers=headers)
+        if response.status_code == 429 and attempt < 4:
+            retry_after = int(response.headers.get('Retry-After', 30))
+            print(f"Zhipu API rate limited, retrying in {retry_after}s...", file=sys.stderr)
+            time.sleep(retry_after)
+            continue
+        break
     response.raise_for_status()
     result = response.json()
     return result['choices'][0]['message']['content']
