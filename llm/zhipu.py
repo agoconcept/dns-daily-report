@@ -18,7 +18,7 @@ def log(msg):
     retry=retry_if_exception_type(requests.exceptions.RequestException)
 )
 def call(prompt, api_key):
-    url = "https://api.z.ai/api/paas/v4/chat/completions"
+    url = "https://api.z.ai/api/coding/paas/v4/chat/completions"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     for attempt in range(5):
         log(f"Calling {MODEL} (attempt {attempt + 1}/5)...")
