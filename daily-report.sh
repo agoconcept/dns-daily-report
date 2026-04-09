@@ -86,7 +86,7 @@ if [[ -n "${ZHIPU_API_KEY}" || -n "${MINIMAX_API_KEY}" || -n "${DEEPSEEK_API_KEY
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
     log "Running AI analysis..."
-    python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" "$SCRIPT_DIR/res/analysis_template.html" > "$ANALYSIS_FILE" 2>&1
+    python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" "$SCRIPT_DIR/res/analysis_template.html" > "$ANALYSIS_FILE"
     if [[ $? -eq 0 ]]; then
         log "Analysis complete: ${ANALYSIS_FILE}"
     else
