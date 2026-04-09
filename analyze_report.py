@@ -33,17 +33,22 @@ def analyze_dns_report(report_file, analysis_template_file):
     deepseek_key = os.getenv('DEEPSEEK_API_KEY')
     gemini_key = os.getenv('GEMINI_API_KEY')
 
-    if zhipu_key:
-        return zhipu.call(prompt, zhipu_key)
-    elif minimax_key:
-        return minimax.call(prompt, minimax_key)
-    elif deepseek_key:
-        return deepseek.call(prompt, deepseek_key)
-    elif gemini_key:
-        return gemini.call(prompt, gemini_key)
-    else:
-        print("Error: neither ZHIPU_API_KEY, MINIMAX_API_KEY, DEEPSEEK_API_KEY nor GEMINI_API_KEY is set")
-        sys.exit(1)
+    errors = []
+    providers = [
+        ("Zhipu", zhipu_key, zhipu),
+        ("MiniMax", minimax_key, minimax),
+        ("DeepSeek", deepseek_key, deepseek),
+        ("Gemini", gemini_key, gemini),
+    ]
+    for name, key, module in providers:
+        if key:
+            try:
+                return module.call(prompt, key)
+            except Exception as e:
+                errors.append(f"{name}: {e}")
+                print(f"Warning: {name} failed, trying next provider. Error: {e}", file=sys.stderr)
+    print(f"Error: all LLM providers failed:\n" + "\n".join(errors), file=sys.stderr)
+    sys.exit(1)
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
