@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log() { echo "[$(date '+%H:%M:%S')] $*"; }
+
 # Parse arguments
 # NOTE! Email list must be comma-separated
 # NOTE! Client IPs must be space-separated
@@ -36,12 +38,17 @@ fi
 DATE=$(date -d '1 day ago' +%Y-%m-%d)
 TIMESTAMP=$(date -d '1 day ago' +%s)
 
+log "Generating Pi-hole DNS report for ${DATE}"
+log "Email: ${EMAIL}"
+log "Client IPs: ${CLIENT_IPS}"
+
 # Initialize report
 COMBINED_REPORT="${REPORT_DIR}/summary_${DATE}.txt"
 > "$COMBINED_REPORT"
 
 # Iterate over all client IPs
 for CLIENT_IP in $CLIENT_IPS; do
+    log "Querying DNS data for ${CLIENT_IP}..."
 
     echo "=== Report for ${CLIENT_IP} ===" >> "$COMBINED_REPORT"
     echo "" >> "$COMBINED_REPORT"
@@ -67,6 +74,9 @@ ORDER BY total_queries DESC
 LIMIT 500;
 EOF
 
+    DOMAIN_COUNT=$(grep -c '.' "$REPORT_FILE" 2>/dev/null || echo 0)
+    log "  Found ${DOMAIN_COUNT} domains for ${CLIENT_IP}"
+
     cat "$REPORT_FILE" >> "$COMBINED_REPORT"
     echo -e "\n\n" >> "$COMBINED_REPORT"
 done
@@ -75,12 +85,22 @@ done
 if [[ -n "${ZHIPU_API_KEY}" || -n "${MINIMAX_API_KEY}" || -n "${DEEPSEEK_API_KEY}" || -n "${GEMINI_API_KEY}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
+    log "Running AI analysis..."
     python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" "$SCRIPT_DIR/res/analysis_template.html" > "$ANALYSIS_FILE" 2>&1
+    if [[ $? -eq 0 ]]; then
+        log "Analysis complete: ${ANALYSIS_FILE}"
+    else
+        log "ERROR: Analysis failed, check ${ANALYSIS_FILE}"
+        exit 1
+    fi
 else
+    log "No LLM API key set, sending raw summary"
     echo "No API key defined" | mail -s "Pi-hole Daily Report - ${DATE}" "$EMAIL"
     exit 0
 fi
 
 # Send email
+log "Sending email to ${EMAIL}"
 cat "$ANALYSIS_FILE" | mail -a "Content-Type: text/html; charset=UTF-8" -s "Pi-hole Daily Report - ${DATE}" "$EMAIL"
+log "Done"
 

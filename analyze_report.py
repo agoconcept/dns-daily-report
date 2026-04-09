@@ -15,9 +15,14 @@ DNS_WHITE_LIST = [
     "amazon.es"                             # Amazon
 ]
 
+def log(msg):
+    print(f"[analyze] {msg}", file=sys.stderr)
+
 def analyze_dns_report(report_file, analysis_template_file):
     with open(report_file, 'r') as f:
         report_content = f.read()
+    log(f"Loaded report: {len(report_content)} chars")
+
     with open(analysis_template_file, 'r') as f:
         analysis_template = f.read()
 
@@ -27,6 +32,7 @@ def analyze_dns_report(report_file, analysis_template_file):
             .replace('{dns_white_list}', str(DNS_WHITE_LIST)) \
             .replace('{report_content}', report_content) \
             .replace('{analysis_template}', analysis_template)
+    log(f"Prompt built: {len(prompt)} chars")
 
     zhipu_key = os.getenv('ZHIPU_API_KEY')
     minimax_key = os.getenv('MINIMAX_API_KEY')
@@ -43,11 +49,16 @@ def analyze_dns_report(report_file, analysis_template_file):
     for name, key, module in providers:
         if key:
             try:
-                return module.call(prompt, key)
+                log(f"Using {name} ({module.MODEL})")
+                result = module.call(prompt, key)
+                log(f"Analysis received: {len(result)} chars")
+                return result
             except Exception as e:
                 errors.append(f"{name}: {e}")
-                print(f"Warning: {name} failed, trying next provider. Error: {e}", file=sys.stderr)
-    print(f"Error: all LLM providers failed:\n" + "\n".join(errors), file=sys.stderr)
+                log(f"WARNING: {name} failed: {e}")
+                if any(k for _, k, _ in providers[providers.index((name, key, module))+1:]):
+                    log("Trying next provider...")
+    log(f"ERROR: All providers failed:\n" + "\n".join(f"  {e}" for e in errors))
     sys.exit(1)
 
 if __name__ == "__main__":
