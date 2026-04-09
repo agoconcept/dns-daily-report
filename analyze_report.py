@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
+import llm.zhipu as zhipu
 import llm.minimax as minimax
 import llm.deepseek as deepseek
 import llm.gemini as gemini
@@ -27,18 +28,21 @@ def analyze_dns_report(report_file, analysis_template_file):
             .replace('{report_content}', report_content) \
             .replace('{analysis_template}', analysis_template)
 
+    zhipu_key = os.getenv('ZHIPU_API_KEY')
     minimax_key = os.getenv('MINIMAX_API_KEY')
     deepseek_key = os.getenv('DEEPSEEK_API_KEY')
     gemini_key = os.getenv('GEMINI_API_KEY')
 
-    if minimax_key:
+    if zhipu_key:
+        return zhipu.call(prompt, zhipu_key)
+    elif minimax_key:
         return minimax.call(prompt, minimax_key)
     elif deepseek_key:
         return deepseek.call(prompt, deepseek_key)
     elif gemini_key:
         return gemini.call(prompt, gemini_key)
     else:
-        print("Error: neither GEMINI_API_KEY, DEEPSEEK_API_KEY nor MINIMAX_API_KEY is set")
+        print("Error: neither ZHIPU_API_KEY, MINIMAX_API_KEY, DEEPSEEK_API_KEY nor GEMINI_API_KEY is set")
         sys.exit(1)
 
 if __name__ == "__main__":

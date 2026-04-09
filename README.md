@@ -12,7 +12,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - Generate daily reports showing top 100 domains queried
 - Organize reports by client IP in separate directories
 - Create combined summary reports
-- AI-powered content analysis using MiniMax, DeepSeek or Gemini
+- AI-powered content analysis using Zhipu, MiniMax, DeepSeek or Gemini
 - Automatic email delivery of daily summaries
 - Configurable via command-line arguments
 
@@ -23,7 +23,7 @@ This tool queries Pi-hole's SQLite database to generate daily summaries of DNS q
 - User must be in the `pihole` group to access the database
 - SQLite3
 - Python (for AI analysis feature)
-- MiniMax, DeepSeek or Gemini API key (for content analysis)
+- Zhipu, MiniMax, DeepSeek or Gemini API key (for content analysis)
 
 ### Install Dependencies
 
@@ -70,7 +70,15 @@ Log out and back in for the group change to take effect.
 
 ### Configure AI Analysis (Optional)
 
-The analysis runs automatically if `MINIMAX_API_KEY`, `DEEPSEEK_API_KEY`, or `GEMINI_API_KEY` is set. MiniMax takes precedence, then DeepSeek, then Gemini.
+The analysis runs automatically if `ZHIPU_API_KEY`, `MINIMAX_API_KEY`, `DEEPSEEK_API_KEY`, or `GEMINI_API_KEY` is set. Zhipu takes precedence, then MiniMax, then DeepSeek, then Gemini.
+
+#### Zhipu
+
+1. Get an API key: https://open.z.ai/
+2. Set the environment variable:
+```bash
+export ZHIPU_API_KEY="your-api-key-here"
+```
 
 #### MiniMax
 
@@ -102,6 +110,7 @@ Models are configured in `config.ini`:
 
 ```ini
 [llm]
+zhipu_model = glm-5.1
 gemini_model = gemini-2.0-flash
 deepseek_model = deepseek-chat
 ```
@@ -119,6 +128,7 @@ The LLM clients include automatic retry logic with exponential backoff:
 #### Cron Setup with API Key
 
 ```
+ZHIPU_API_KEY=your-api-key-here
 MINIMAX_API_KEY=your-api-key-here
 DEEPSEEK_API_KEY=your-api-key-here
 GEMINI_API_KEY=your-api-key-here
@@ -175,8 +185,10 @@ crontab -e
 ├── config.ini                  # LLM model configuration
 ├── requirements.txt
 ├── llm/
+│   ├── zhipu.py                # Zhipu (GLM) API client
 │   ├── gemini.py               # Gemini API client
-│   └── deepseek.py             # DeepSeek API client
+│   ├── deepseek.py             # DeepSeek API client
+│   └── minimax.py              # MiniMax API client
 └── res/
     ├── prompt.txt              # Analysis prompt template
     └── analysis_template.html  # HTML report template
