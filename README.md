@@ -132,7 +132,7 @@ ZHIPU_API_KEY=your-api-key-here
 MINIMAX_API_KEY=your-api-key-here
 DEEPSEEK_API_KEY=your-api-key-here
 GEMINI_API_KEY=your-api-key-here
-0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100" --dir "/home/pi/reports"
+0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100" --dir "/home/pi/reports" >/dev/null 2>&1
 ```
 
 ## Usage
@@ -173,8 +173,10 @@ crontab -e
 
 3. Add the following line (adjust paths and parameters):
 ```
-0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100 192.168.1.101" --dir "/home/pi/reports"
+0 0 * * * /path/to/daily-report.sh --email "your@email.com" --ips "192.168.1.100 192.168.1.101" --dir "/home/pi/reports" >/dev/null 2>&1
 ```
+
+Redirecting `>/dev/null 2>&1` prevents cron from sending duplicate emails via stdout and stderr, since the script already handles email delivery internally.
 
 ## Project Structure
 
