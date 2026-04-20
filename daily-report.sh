@@ -59,8 +59,7 @@ for CLIENT_IP in $CLIENT_IPS; do
 
     # Get data directly from Pi Hole SQLite
     sqlite3 /etc/pihole/pihole-FTL.db <<EOF > "$REPORT_FILE"
-.headers on
-.mode column
+.mode markdown
 SELECT
     q.domain,
     COUNT(*) as total_queries,
