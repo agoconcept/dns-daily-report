@@ -28,8 +28,16 @@
             border-bottom: 1px solid #ddd;
             padding-bottom: 10px;
         }
+        .status-safe {
+            color: #27ae60;
+            font-weight: bold;
+        }
         .status-caution {
             color: #d35400;
+            font-weight: bold;
+        }
+        .status-concern {
+            color: #c0392b;
             font-weight: bold;
         }
         table {
@@ -50,20 +58,26 @@
             color: #c0392b;
             font-weight: bold;
         }
+        .high-volume {
+            color: #8e44ad;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>DNS Safety Analysis Report</h1>
-        <p>This report analyzes the web activity for clients <strong>192.168.1.135</strong> and <strong>192.168.1.141</strong> to identify potential exposure to age-inappropriate content.</p>
+        <p>This report analyzes the web activity for the monitored clients to identify potential exposure to age-inappropriate content.</p>
 
         <!-- 1. Overall Assessment -->
         <div class="box">
             <h2>1. Overall Assessment</h2>
             <p>Status: <span class="status-caution">CAUTION</span></p>
             <p>
-                The network activity shows a mix of educational tools (Duolingo), music (Spotify), and system updates. However, there are signs of <strong>Social Media</strong> access (Facebook) and <strong>Video Editing/Social Sharing</strong> tools (CapCut) on one device, as well as <strong>Casual Gaming</strong> platforms (Poki) on the other. No direct access to adult-only websites was detected, but the presence of Facebook and YouTube warrants monitoring.
+                Brief narrative summary of the overall findings. Mention the key
+                categories of activity detected and whether any immediate action
+                is needed.
             </p>
         </div>
 
@@ -72,14 +86,14 @@
             <h2>2. Summary of Websites Visited</h2>
             <table>
                 <thead>
-                    <tr><th>Category</th><th>Domains</th></tr>
+                    <tr><th>Category</th><th>Domains</th><th>Notes</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Social Media</td><td>web.facebook.com, capcutapi.us</td></tr>
-                    <tr><td>Streaming</td><td>googlevideo.com, youtube.com, spotify.com</td></tr>
-                    <tr><td>Gaming</td><td>poki.com</td></tr>
-                    <tr><td>Education</td><td>duolingo.com</td></tr>
-                    <tr><td>System / Updates</td><td>windowsupdate.com, apple.com</td></tr>
+                    <tr><td>Social Media</td><td>example.com</td><td></td></tr>
+                    <tr><td>Streaming</td><td>example.com <span class="high-volume">(high volume)</span></td><td></td></tr>
+                    <tr><td>Gaming</td><td>example.com</td><td></td></tr>
+                    <tr><td>Education</td><td>example.com</td><td></td></tr>
+                    <tr><td>System / Updates</td><td>example.com</td><td></td></tr>
                 </tbody>
             </table>
         </div>
@@ -88,21 +102,16 @@
         <div class="box">
             <h2>3. Specific Domains of Concern</h2>
             <ul>
-                <li><span class="warning-text">Facebook (web.facebook.com):</span> Detected on 192.168.1.135. Facebook is generally rated 13+ and contains uncurated social content and messaging.</li>
-                <li><span class="warning-text">CapCut (capcutapi.us):</span> Detected on 192.168.1.135. While a video editor, it is owned by ByteDance (TikTok) and features a social community where users share videos.</li>
-                <li><span class="warning-text">Poki (poki.com):</span> Detected on 192.168.1.141. An online gaming site. While many games are for kids, it contains ads and unrated third-party games.</li>
-                <li><span class="warning-text">YouTube (googlevideo.com / youtube.com):</span> High volume on both devices. Without Restricted Mode, children may encounter inappropriate video content.</li>
+                <li><span class="warning-text">Domain Name:</span> Explanation of why this domain is flagged, including which client accessed it.</li>
             </ul>
+            <p><em>No concerning domains detected.</em></p>
         </div>
 
         <!-- 4. Recommendations -->
         <div class="box">
             <h2>4. Recommendations</h2>
             <ol>
-                <li><strong>Review Social Media Usage:</strong> Confirm if the user of 192.168.1.135 is of age to use Facebook and CapCut.</li>
-                <li><strong>Enforce YouTube Restricted Mode:</strong> Ensure that the Google accounts associated with these devices have "Restricted Mode" enabled to filter out mature content.</li>
-                <li><strong>Ad-Blocking:</strong> A high number of hits are from <code>applovin.com</code> and <code>doubleclick.net</code>. These are ad-trackers often found in free mobile games. Consider a network-level ad blocker to reduce exposure to inappropriate advertisements.</li>
-                <li><strong>Check "Poki" Activity:</strong> For the device 192.168.1.141, monitor time spent on Poki.com as it can be a significant distraction.</li>
+                <li><strong>Recommendation title:</strong> Description of the recommended action.</li>
             </ol>
         </div>
 

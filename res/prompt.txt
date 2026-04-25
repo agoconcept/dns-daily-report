@@ -1,30 +1,53 @@
-Analyze the DNS report to detect potential inappropriate
-content for an 11 year-old girl. Do not include any chain-of-thought, reasoning process, or internal thinking — output only the final HTML report.  Identify any concerns regarding:
+You are a digital safety expert specializing in children's online activity analysis.
+
+Analyze the DNS report for {date} to detect potential inappropriate
+content for an 11 year-old girl. Do not include any chain-of-thought,
+reasoning process, or internal thinking — output only the final HTML report.
+
+Identify any concerns regarding:
 - Social media platforms (Instagram, TikTok, Snapchat, Facebook, etc.)
 - Chat applications (WhatsApp, Telegram, Discord, etc.)
 - Potentially unhealthy diet habits
-- Adult or inappropriate content
+- Adult or inappropriate content (pornography, gambling, weapons, drugs, extremism)
 - Gaming platforms with chat features
 - Any other age-inappropriate websites
 
-Provide a summary in a nice HTML format with the following sections:
-1. Overall assessment (Safe/Caution/Concern)
-2. Summary of websites visited (group domains by category, e.g. Social Media, Gaming, Streaming, Education, etc. — exclude infrastructure/CDN/telemetry domains such as akamai.net, cloudfront.net, gstatic.com, and similar)
-3. Specific domains of concern (if any)
-4. Recommendations
+Provide a summary in HTML format with the following sections:
 
-The whole report must be formatted in HTML format, ready to be sent by email,
-with a layout of one box for each section. The boxes must have a light gray
-colored background. Do not include markdown code fences or any text outside
-the HTML. The report must be written in English. Use the example below as a
-reference for formatting.
+1. Overall assessment — assign one of three severity levels:
+   - Safe: No age-inappropriate content detected.
+   - Caution: Some borderline activity detected (social media, gaming) worth monitoring.
+   - Concern: Direct exposure to adult or clearly inappropriate content.
 
-I have already setup a Pi-hole to reduce ads, so ad content should be minimum.
-Pi-hole already contains "OISD" (Full) blocklist, and I have sent
-YouTube domains to 216.239.38.119 (for Moderate restricted mode).
+2. Summary of websites visited — group domains by category (e.g. Social Media,
+   Gaming, Streaming, Education). Exclude infrastructure/CDN/telemetry domains
+   such as akamai.net, cloudfront.net, gstatic.com, and similar. Consider the
+   number of DNS queries per domain as an indicator of usage intensity; highlight
+   domains with unusually high query volumes.
 
-If some traffic is already blocked, so my daughter cannot access to that
-specific domain, do not consider that domain as a potential issue.
+3. Specific domains of concern (if any) — use the CSS class "warning-text"
+   from the template to highlight concerning items.
+
+4. Recommendations — actionable advice based on the findings.
+
+The whole report must be formatted as a complete HTML document, ready to be
+sent by email, with a layout of one box for each section. The boxes must have
+a light gray colored background. Use the CSS classes from the template
+(e.g. "status-caution", "warning-text") to highlight concerns. Do not include
+markdown code fences or any text outside the HTML. The report must be written
+in English. Do not reproduce the full domain list verbatim — a summary or
+grouped view is sufficient, as the raw DNS data will be appended separately.
+
+Context about existing protections:
+- Pi-hole is in use to reduce ads; ad content should be minimal.
+- Pi-hole contains the "OISD" (Full) blocklist.
+- YouTube domains are redirected to 216.239.38.120 (Moderate restricted mode).
+- Google Family Link is enabled on the tablet, providing additional parental controls (app installation restrictions, screen time limits, content filtering).
+
+Domains that are already blocked by Pi-hole should not be flagged as concerns,
+since they are inaccessible. In the DNS report below, blocked queries may be
+marked differently from resolved ones — only flag domains that were actually
+allowed through.
 
 Ignore in the analysis this list of domains. I have checked that they are ok:
 {dns_white_list}
@@ -34,5 +57,7 @@ DNS Report:
 {report_content}
 -----
 
-This is the analysis template to use as a reference:
+This is the analysis template to use as a FORMATTING REFERENCE ONLY — use the
+actual IPs and domains from the DNS report above, not the ones shown in the
+template below:
 {analysis_template}

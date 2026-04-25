@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
+from datetime import date
 import llm.zhipu as zhipu
 import llm.minimax as minimax
 import llm.deepseek as deepseek
@@ -12,7 +13,10 @@ DNS_WHITE_LIST = [
     "youtube.com", "googlevideo.com",       # YouTube videos
     "spotify.com",                          # Spotify
     "pinterest.com", "pinimg.com",          # Pinterest
-    "amazon.es"                             # Amazon
+    "amazon.es",                            # Amazon
+    "supercell.com",                        # Brawl Stars / Supercell games
+    "poki.com",                             # Poki online games
+    "skype.com", "skypedata.akadns.net",    # Skype
 ]
 
 def log(msg):
@@ -26,10 +30,12 @@ def analyze_dns_report(report_file, analysis_template_file):
     with open(analysis_template_file, 'r') as f:
         analysis_template = f.read()
 
+    whitelist_str = '\n'.join(f'- {d}' for d in DNS_WHITE_LIST)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(script_dir, 'res', 'prompt.txt'), 'r') as f:
         prompt = f.read() \
-            .replace('{dns_white_list}', str(DNS_WHITE_LIST)) \
+            .replace('{date}', date.today().strftime('%Y-%m-%d')) \
+            .replace('{dns_white_list}', whitelist_str) \
             .replace('{report_content}', report_content) \
             .replace('{analysis_template}', analysis_template)
     log(f"Prompt built: {len(prompt)} chars")
@@ -76,4 +82,8 @@ if __name__ == "__main__":
         report_content = f.read()
 
     analysis = analyze_dns_report(report_file, analysis_template_file)
-    print(analysis + "<hr/><pre>" + report_content + "</pre>")
+    raw_injection = f"<hr/><h2>Raw DNS Report</h2><pre>{report_content}</pre>"
+    if '</body>' in analysis:
+        print(analysis.replace('</body>', f'{raw_injection}</body>'))
+    else:
+        print(analysis + raw_injection)
