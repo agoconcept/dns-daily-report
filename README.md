@@ -112,7 +112,7 @@ Models are configured in `config.ini`:
 [llm]
 zhipu_model = glm-5.1
 gemini_model = gemini-2.0-flash
-deepseek_model = deepseek-chat
+deepseek_model = deepseek-flash
 ```
 
 #### Prompt Customization
