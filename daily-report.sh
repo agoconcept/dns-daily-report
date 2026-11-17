@@ -5,14 +5,15 @@ log() { echo "[$(date '+%H:%M:%S')] $*"; }
 # Parse arguments
 # NOTE! Email list must be comma-separated
 # NOTE! Client IPs must be space-separated
-OPTS=$(getopt -o he:i:d: --long help,email:,ips:,dir: -n 'daily-report.sh' -- "$@")
+OPTS=$(getopt -o he:i:d: --long help,email:,ips:,dir:,config: -n 'daily-report.sh' -- "$@")
 eval set -- "$OPTS"
 while true; do
     case "$1" in
-        -h|--help) echo "Usage: daily-report.sh --email <list of receivers> --ips <list of IPs> --dir <report dir>"; exit 0 ;;
+        -h|--help) echo "Usage: daily-report.sh --email <list of receivers> --ips <list of IPs> --dir <report dir> [--config <clients.json>]"; exit 0 ;;
         -e|--email) EMAIL="$2"; shift 2 ;;
         -i|--ips) CLIENT_IPS="$2"; shift 2 ;;
         -d|--dir) REPORT_DIR="$2"; shift 2 ;;
+        --config) CONFIG_FILE="$2"; shift 2 ;;
         --) shift; break ;;
         *) exit 1 ;;
     esac
@@ -35,6 +36,11 @@ if [[ -z "${REPORT_DIR}"  ]]; then
 fi
 
 # Calculate dates
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/clients.sh"
+CONFIG_FILE="${CONFIG_FILE:-${SCRIPT_DIR}/clients.json}"
+load_client_descriptions "${CONFIG_FILE}"
+
 DATE=$(date -d '1 day ago' +%Y-%m-%d)
 TIMESTAMP=$(date -d '1 day ago' +%s)
 
@@ -45,12 +51,14 @@ log "Client IPs: ${CLIENT_IPS}"
 # Initialize report
 COMBINED_REPORT="${REPORT_DIR}/summary_${DATE}.txt"
 > "$COMBINED_REPORT"
+clients_section "$CLIENT_IPS" >> "$COMBINED_REPORT"
+echo "" >> "$COMBINED_REPORT"
 
 # Iterate over all client IPs
 for CLIENT_IP in $CLIENT_IPS; do
     log "Querying DNS data for ${CLIENT_IP}..."
 
-    echo "=== Report for ${CLIENT_IP} ===" >> "$COMBINED_REPORT"
+    client_header "${CLIENT_IP}" >> "$COMBINED_REPORT"
     echo "" >> "$COMBINED_REPORT"
 
     mkdir -p "$REPORT_DIR"/${CLIENT_IP}
@@ -82,7 +90,6 @@ done
 
 # Analyze report with LLM (if an API key is set), otherwise fall back to raw summary
 if [[ -n "${ZHIPU_API_KEY}" || -n "${MINIMAX_API_KEY}" || -n "${DEEPSEEK_API_KEY}" || -n "${GEMINI_API_KEY}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     ANALYSIS_FILE="${REPORT_DIR}/analysis_${DATE}.txt"
     log "Running AI analysis..."
     python3 "${SCRIPT_DIR}/analyze_report.py" "$COMBINED_REPORT" "$SCRIPT_DIR/res/analysis_template.html" > "$ANALYSIS_FILE"

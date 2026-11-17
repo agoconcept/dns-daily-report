@@ -146,7 +146,36 @@ GEMINI_API_KEY=your-api-key-here
 - `--email`, `-e`: Comma-separated list of email recipients
 - `--ips`, `-i`: Space-separated list of client IP addresses to monitor
 - `--dir`, `-d`: Directory where reports will be saved
+- `--config`: Optional JSON file mapping client IPs to descriptions (default: `clients.json` next to the script)
 - `--help`, `-h`: Display help message
+
+### Client Descriptions
+
+You can optionally configure a description for each client IP. Create a
+`clients.json` file (gitignored, so it is not committed) with an IP to
+description mapping:
+
+```json
+{
+  "192.168.1.135": "Alice's tablet",
+  "192.168.1.141": "Bob's laptop"
+}
+```
+
+Each description is included at the beginning of the report and in the
+section header of the raw data summary:
+
+```
+=== Clients ===
+- 192.168.1.135: Alice's tablet
+- 192.168.1.141: Bob's laptop
+
+=== Report for 192.168.1.135 (Alice's tablet) ===
+```
+
+IPs without a description in the file fall back to showing only the IP. If
+the file is missing or invalid, the report runs normally without
+descriptions.
 
 ### Example
 

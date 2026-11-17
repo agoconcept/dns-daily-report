@@ -21,14 +21,21 @@ python3 analyze_report.py <report_file> res/analysis_template.html
 
 # Install Python dependencies
 pip3 install -r requirements.txt
+
+# Optional: --config points to a clients.json file (default: clients.json
+# next to the script) mapping IPs to descriptions, included at the
+# beginning of the report and in the raw data summary headers
 ```
 
-There is no test suite, linter, or type-checker configured for this project.
+There is no linter or type-checker configured for this project. Unit tests
+for `clients.sh` live in `tests/test_clients.sh` (run with `bash
+tests/test_clients.sh`).
 
 ## Architecture
 
 ```
 daily-report.sh          # Entry point. Queries Pi-hole DB, orchestrates analysis, sends email.
+clients.sh               # Client descriptions loaded from clients.json (IP -> description)
 analyze_report.py        # Builds LLM prompt, calls provider, outputs HTML.
 config.ini               # LLM model names under [llm] section.
 llm/
